@@ -23,13 +23,16 @@ There are eight primary SADs, with four working descriptors:
 - 3 more **reserved** SADs.
 ### 2β.3. Segment Address Descriptor Structure
 Segment Address Descriptors do not have a fixed length, but rather a fixed structure with markers for its start and end. Immediately after the 12-byte header, a 4-byte marker indicates where the segment address descriptors begin. This may be placed anywhere **AFTER** the 12-byte header, all data in-between are skipped. The 4-byte marker is `0x534144EF`. Immediately after this marker, a 2-byte primary descriptor type (FSAD = `FD` or `0x4644`, MSAD = `MD` or `0x4D44`, PISAD = `PD` or `0x5044`, DDSAD = `DD` or `0x4444`, ESAD = `ED` or `0x4544`) is expected, followed by `0x00EF` and the address (see 2β.4.), and lastly `0xFE00`, where it expects the same structure again until all **working** (FSAD, MSAD, DDSAD, and ESAD) primary descriptors are referenced.
+
 ### 2β.4. Address Structure
 Segment Address Descriptors do not always use regular absolute or relative addresses. Instead, it implements multiple methods/types that may be independently used for the address. The first byte of the address indicates the method/type the address uses, there are 4 primary methods:
 - `00`: Absolute Addressing Mode, references the absolute address offset from the file to the segment.
 - `A0`: Relative Addressing Mode, references the relative address offset from the Header-Segment Split Marker (see 2β.5.).
 - `CE`: Back Stack Addressing Mode, uses an automatic ordering from end-to-start (relative to Header-Segment Split Marker), can be unstable if incorrect.[†]
 - `EC`: Front Stack Addressing Mode, uses an automatic ordering from start-to-end (relative to Header-Segment Split Marker), can be unstable if incorrect.[†]
-[†]: Back/Front Stack Addressing Mode explained further in 2β.6.
+
+[†]: Back/Front Stack Addressing Mode explained further in 2β.6. \
 Using absolute or relative addressing requires an address immediately after the type, whereas using stack addressing requires the SAD descriptor (2β.3. `0xFE00`) immediately after, as it's automatically calculated.
+
 ### 2β.5. Header-Segment Split Marker
 The Segment Address Descriptors are the final part of the header. The header is followed by a series of bytes, referred to as the *"Header-Segment Split Marker,"* separating the header from the subsequent data segments. The bytes are as follows: `0xEF2A53554253514853532AFE`.
